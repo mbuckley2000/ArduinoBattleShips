@@ -123,7 +123,7 @@ void comSetup() {
 
 	deb("Connection made");
 	flushSerial();
-	delay(5000);
+	//delay(5000);
 
 	//Decide player numbers
 	deb("Deciding player numbers");
@@ -155,7 +155,7 @@ void comSetup() {
 
 	deb("Player numbers have been assigned.");
 	flushSerial();
-	delay(5000);
+	//delay(5000);
 }
 
 //Receive communication
