@@ -266,6 +266,7 @@ void gameLoop() {
 				deb("Both players are ready. Moving to gameState 1");
 				playerReady[0] = false;
 				playerReady[1] = false;
+				flushSerial();
 			}
 			break;
 		}
