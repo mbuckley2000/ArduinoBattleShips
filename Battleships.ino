@@ -276,9 +276,11 @@ void gameLoop() {
 			digitalWrite(ledPin[ship], HIGH);
 
 			//Take button input to choose my ship placement
-			if (buttonPressed && !shipTaken[ship]) {
-				shipTaken[ship] = true;
-				shipLocation[myPlayer][nextFreeShip()] = ship;
+			if (buttonPressed) {
+				if (!shipTaken[ship]) {
+					shipTaken[ship] = true;
+					shipLocation[myPlayer][nextFreeShip()] = ship;
+				}
 				buttonPressed = false;
 			}
 
