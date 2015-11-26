@@ -10,7 +10,7 @@
 #define TXPIN 13
 #define POTPIN A0
 #define BUTTONPIN 2
-#define BUZZPIN 0
+#define SPEAKERPIN 3
 
 //Game definitions
 #define MAXSHIPS 3
@@ -18,7 +18,6 @@
 
 //Game Variables
 int ledPin[] = {4, 5, 6, 7, 8, 9, 10, 11};
-int speakerPin = 3;
 int gameState = 0; //0 is menu, 1 is choosing ships, 2 is attacking ships, 3 is game over
 volatile bool buttonPressed;
 int activePlayer;
@@ -71,18 +70,17 @@ void buttonInterrupt() {
 	buttonPressed = true;
 }
 
-//Starts here
 void setup() {
-	comSetup();
-	gameSetup();
+comSetup();
+gameSetup();
+
 }
 
 //Main Loop
-void loop() {
+ void loop() {
 	clearLEDs();
 	comReceive();
 	gameLoop();
-	//musicLoop();
 }
 
 //Setup Communication
@@ -241,6 +239,7 @@ void gameSetup() {
 	for (int i=0; i<MAXSHIPS; i++) {
 		shipLocation[myPlayer][i] = -1;
 	}
+	pinMode(SPEAKERPIN, OUTPUT);
 }
 
 //Main Game Loop
@@ -428,19 +427,22 @@ int nextFreeShip() {
 
 
 void playNote(int frequency, int notelength){
-  tone(speakerPin, frequency);
-  delay(notelength);
-  noTone(speakerPin); }
+	tone(SPEAKERPIN, frequency);
+	delay(notelength);
+	noTone(SPEAKERPIN); 
+}
 
 void failSound(){
-  playNote(100, 1000);
-  delay(500); }
+	playNote(100, 1000);
+	delay(500); 
+}
 
 void succeedSound(){
-  playNote(329, 300);
-  playNote(494, 300);
-  playNote(658, 300);
-  delay(500); }
+	playNote(329, 300);
+	playNote(494, 300);
+	playNote(658, 300);
+	delay(500); 
+}
 
 //Returns the enemy ship number (1, 2 or 3) at the location specified
 //Returns -1 if there is no ship at the location
@@ -465,11 +467,3 @@ bool haveWeWon() {
 		return(false);
 	}
 }
-
-
-// You suck and I rock
-
-// Hello world
-
-
-//Dickface
