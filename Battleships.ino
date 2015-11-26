@@ -500,6 +500,7 @@ int enemyShipAtLocation(int location) {
 		}
 	}
 	return(-1);
+	warn("We returned -1 from enemyShipAtLocation");
 }
 
 bool haveWeWon() {
