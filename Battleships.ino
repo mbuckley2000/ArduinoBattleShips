@@ -207,7 +207,7 @@ void comReceive() {
 
 				case 2: { //Attacking the other player's ships
 					int shipTheyDestroyed = serial.read();
-					if (shipTheyDestroyed != -1) {
+					if (shipTheyDestroyed != 255) {
 						shipDestroyed[myPlayer][shipTheyDestroyed] = true;
 						deb("They destroyed our ship", shipTheyDestroyed);
 					} else {
@@ -359,7 +359,7 @@ void gameLoop() {
 						serial.print(SOT);
 						serial.write(myPlayer);
 						serial.write(gameState);
-						serial.write(-1); //Ship we just destroyed (We didn't)
+						serial.write(255); //Ship we just destroyed (We didn't)
 						serial.write(activePlayer); //Player who's turn it is now (otherPlayer)
 						serial.write(playerWon[myPlayer]); //Tell them if we've won
 						serial.print(EOT);
