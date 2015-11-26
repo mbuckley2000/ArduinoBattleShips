@@ -45,14 +45,14 @@ void err(char* message) {
 
 void warn(char* message) {
 	if (warningMode) {
-		Serial.print("ERROR: ");
+		Serial.print("WARNING: ");
 		Serial.println(message);
 	}
 }
 
 void deb(char* message) {
 	if (debugMode) {
-		Serial.print("ERROR: ");
+		Serial.print("DEBUG: ");
 		Serial.println(message);
 	}
 }
