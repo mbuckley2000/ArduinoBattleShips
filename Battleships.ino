@@ -30,6 +30,8 @@ int shipLocation[2][MAXSHIPS];
 bool shipTaken[SHIPTOTAL];
 bool debugMode = true; 
 
+//Matt rules
+
 //SoftwareSerial
 SoftwareSerial serial(RXPIN, TXPIN);
 
