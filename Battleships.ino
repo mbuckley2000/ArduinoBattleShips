@@ -109,9 +109,6 @@ void comSetup() {
 					//deb("Received i");
 					serial.print('i');
 				break;
-				default:
-					err("Out of sync. We are making connection, other player is elsewhere");
-				break;
 			}
 		}
 
@@ -150,10 +147,6 @@ void comSetup() {
 					serial.print('0');
 					break;
 				}
-
-				default:
-					err("Out of sync. We are deciding pNum, other player is elsewhere");
-				break;
 			}
 		} else {
 			serial.print('0');
