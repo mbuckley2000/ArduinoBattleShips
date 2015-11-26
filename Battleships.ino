@@ -491,7 +491,7 @@ void exploded(){
 }
 
 
-//Returns the enemy ship number (1, 2 or 3) at the location specified
+//Returns they ship number (1, 2 or 3) at the location specified
 //Returns -1 if there is no ship at the location
 int enemyShipAtLocation(int location) {
 	for (int i=0; i<MAXSHIPS; i++) {
