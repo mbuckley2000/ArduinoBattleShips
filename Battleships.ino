@@ -211,7 +211,7 @@ void comReceive() {
 						shipDestroyed[myPlayer][shipTheyDestroyed] = true;
 						deb("They destroyed our ship", shipTheyDestroyed);
 					} else {
-						deb("They missed their shot");
+						deb("They missed their shot", shipTheyDestroyed);
 					}
 					activePlayer = serial.read();
 					deb("Received active player: ", activePlayer);
