@@ -220,6 +220,9 @@ void gameSetup() {
 	for (int i=0; i<countLEDs(); i++) {
 		pinMode(ledPin[i], OUTPUT);
 	}
+	for (int i=0; i<MAXSHIPS; i++) {
+		shipLocation[myPlayer][i] = -1;
+	}
 }
 
 //Main Game Loop
