@@ -448,24 +448,30 @@ int nextFreeShip() {
 	return(-1);
 }
 
-
-void playNote(int frequency, int notelength) {
-	tone(SPEAKERPIN, frequency);
-	delay(notelength);
-	noTone(SPEAKERPIN);
+void playSound(long frequency, long lengthSound){
+  long period = 1000000/frequency;
+  lengthSound = lengthSound*1000/period;
+  for(long i = 0; i < lengthSound; i++){
+    digitalWrite(SPEAKERPIN,HIGH);
+    delayMicroseconds(period/2);
+    digitalWrite(SPEAKERPIN,LOW);
+    delayMicroseconds(period/2);
+  }
 }
 
-void failSound() {
-	playNote(100, 1000);
-	delay(500);
+void missleFired(){
+	for(int i = 99; i < 1002; i += 5){
+    playSound(1000000/i,10);
+  }
 }
 
-void succeedSound() {
-	playNote(329, 300);
-	playNote(494, 300);
-	playNote(658, 300);
-	delay(500);
+void exploded (){
+	for(int k = 0; k < 250; k++){
+    long blow1 = random(100,2000);
+    playSound(blow1,3);
+  }  
 }
+
 
 //Returns the enemy ship number (1, 2 or 3) at the location specified
 //Returns -1 if there is no ship at the location
