@@ -249,14 +249,16 @@ void gameLoop() {
 			//Play music until both players push their button
 			//Do some fancy shit with LEDs
 			//Check for button presses
-			if (buttonPressed && !playerReady[myPlayer]) {
-				deb("My player is ready.");
-				playerReady[myPlayer] = true;
-				serial.print(SOT);
-				serial.write(myPlayer);
-				serial.write(gameState);
-				serial.write(playerReady[myPlayer]);
-				serial.print(EOT);
+			if (buttonPressed) {
+				if (!playerReady[myPlayer]) {
+					deb("My player is ready.");
+					playerReady[myPlayer] = true;
+					serial.print(SOT);
+					serial.write(myPlayer);
+					serial.write(gameState);
+					serial.write(playerReady[myPlayer]);
+					serial.print(EOT);
+				}
 				buttonPressed = false;
 			}
 
@@ -301,6 +303,7 @@ void gameLoop() {
 			if (playerReady[0] && playerReady[1]) {
 				//Move to next game state
 				gameState = 2;
+				flushSerial();
 				deb("Both players are ready. Moving to gameState 2");
 				playerReady[0] = false;
 				playerReady[1] = false;
