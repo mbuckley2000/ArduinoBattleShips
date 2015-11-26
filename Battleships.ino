@@ -483,7 +483,7 @@ void missleFired(){
   }
 }
 
-void exploded (){
+void exploded(){
 	for(int k = 0; k < 250; k++){
     long blow1 = random(100,2000);
     playSound(blow1,3);
