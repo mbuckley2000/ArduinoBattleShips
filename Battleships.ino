@@ -221,7 +221,6 @@ void comReceive() {
 				}
 
 				case 3: { //Game over
-					playerReady[pNum] = serial.read();
 					break;
 				}
 			}
@@ -382,7 +381,7 @@ void gameLoop() {
 		}
 
 		case 3: { //Game over
-			//
+			gameState = 0;
 			break;
 		}
 	}
