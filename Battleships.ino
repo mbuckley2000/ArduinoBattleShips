@@ -30,7 +30,8 @@ int shipLocation[2][MAXSHIPS];
 bool shipTaken[SHIPTOTAL];
 bool errorMode = true;
 bool warningMode = true; 
-bool debugMode = true; 
+bool debugMode = true;
+bool shipDestroyed[2][MAXSHIPS];
 
 //SoftwareSerial
 SoftwareSerial serial(RXPIN, TXPIN);
@@ -322,6 +323,21 @@ void gameLoop() {
 
 				//Take button input to attack
 				if (buttonPressed) {
+					if (enemyShipAtLocation(ship) != -1) {
+						//We have hit the enemy!
+						deb("We have hit enemy ship", enemyShipAtLocation(ship));
+						shipDestroyed[otherPlayer][enemyShipAtLocation(ship)] = true;
+						//It's now their turn
+						activePlayer = otherPlayer;
+						//Let's tell them
+						serial.print(SOT);
+						serial.write(myPlayer);
+						serial.write(gameState);
+						serial.write(enemyShipAtLocation(ship)); //Destroyed ship
+						serial.write(activePlayer); //Player who's turn it is now (otherPlayer)
+						serial.write(playerWon[myPlayer]); //Tell them if we've won
+						serial.print(EOT);
+					}
 				}
 			}
 			break;
@@ -405,6 +421,7 @@ int nextFreeShip() {
 	return(-1);
 }
 
+<<<<<<< HEAD
 
 
 void playNote(int frequency, int notelength){
@@ -421,3 +438,14 @@ void succeedSound(){
   playNote(494, 300);
   playNote(658, 300);
   delay(500); }
+=======
+//Returns the enemy ship number (1, 2 or 3) at the location specified
+//Returns -1 if there is no ship at the location
+int enemyShipAtLocation(int location) {
+	for (int i=0; i<MAXSHIPS; i++) {
+		if (shipLocation[otherPlayer][i] == location) {
+			return(i);
+		}
+	}
+} 
+>>>>>>> a9a70b331fbaf3e9cd31ec9003876c175ee3d96d
