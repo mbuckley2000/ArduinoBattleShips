@@ -31,6 +31,7 @@ bool shipTaken[SHIPTOTAL];
 bool debugMode = true; 
 
 //Matt rules
+//He really does
 
 //SoftwareSerial
 SoftwareSerial serial(RXPIN, TXPIN);
