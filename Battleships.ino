@@ -4,7 +4,6 @@
 //Tansmission Definitions
 #define SOT 's' //Start of transmission
 #define EOT 'e' //End of transmission
-#define NL 'n' //New line
 
 //Pin Definitions
 #define RXPIN 12 
@@ -54,6 +53,15 @@ void deb(char* message) {
 	if (debugMode) {
 		Serial.print("DEBUG: ");
 		Serial.println(message);
+	}
+}
+
+void deb(char* message, int integer) {
+	if (debugMode) {
+		Serial.print("DEBUG: ");
+		Serial.print(message);
+		Serial.print(": ");
+		Serial.println(integer);
 	}
 }
 
@@ -160,10 +168,13 @@ void comSetup() {
 void comReceive() {
 	if (serial.available() > 0) { //If there is anything in the serial receive buffer
 		if (serial.read() == SOT) { //If the first character in the serial buffer indicates the start of a transmission
+			deb("Received SOT");
 			//Temporary variables for the other player's number and game mode
 			int pNum = serial.read();
 			int gState = serial.read();
-			
+			deb("Received pNum", pNum);
+			deb("Received gState", gState);
+
 			if (pNum != otherPlayer) {
 				//Player number discrepency, attempt to reassign player numbers
 				err("pNum Sync");
@@ -178,6 +189,7 @@ void comReceive() {
 			switch (gameState) {
 				case 0: { //Menu
 					playerReady[pNum] = serial.read();
+					deb("Received pReady", playerReady[pNum]);
 					if (playerReady[otherPlayer]) deb("Other player is ready.");
 					break;
 				}
@@ -185,8 +197,10 @@ void comReceive() {
 				case 1: { //Selecting player's own ships
 					for (int i=0; i<MAXSHIPS; i++) {
 						shipLocation[pNum][i] = serial.read();
+						deb("Received Ship Location", shipLocation[pNum][i]);
 					}
 					playerReady[pNum] = serial.read();
+					deb("Received pReady", playerReady[pNum]);
 					if (playerReady[otherPlayer]) deb("Other player has selected ships and is ready.");
 					break;
 				}
@@ -205,6 +219,8 @@ void comReceive() {
 
 			if (serial.read() != EOT) { //If the next character is not the end of transmission character, give a warning
 				warn("Unexpected packet structure");
+			} else {
+				deb("Received EOT");
 			}
 		} else {
 			warn("Received packet that doesn't start with SOT, flushing serial buffer");
