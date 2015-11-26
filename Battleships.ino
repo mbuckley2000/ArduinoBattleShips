@@ -421,8 +421,6 @@ int nextFreeShip() {
 	return(-1);
 }
 
-<<<<<<< HEAD
-
 
 void playNote(int frequency, int notelength){
   tone(speakerPin, frequency);
@@ -438,7 +436,7 @@ void succeedSound(){
   playNote(494, 300);
   playNote(658, 300);
   delay(500); }
-=======
+
 //Returns the enemy ship number (1, 2 or 3) at the location specified
 //Returns -1 if there is no ship at the location
 int enemyShipAtLocation(int location) {
@@ -448,4 +446,4 @@ int enemyShipAtLocation(int location) {
 		}
 	}
 } 
->>>>>>> a9a70b331fbaf3e9cd31ec9003876c175ee3d96d
+
