@@ -83,15 +83,19 @@ void comSetup() {
 	serial.begin(57600);
 
 	//Setup Debug Serial
-	if (debugMode) Serial.begin(57600);
+	if (debugMode || errorMode || warningMode) Serial.begin(57600);
 
 	//Wait for connection
 	deb("Waiting for connection");
 	bool step1 = false;
 	bool step2 = false;
 	char data;
+
+	flushSerial(); //In case other device has been on for a while
+
 	while (!step2) {
 		delay(500);
+
 		if (serial.available() > 0) {
 			data = serial.read();
 			switch (data) {
@@ -99,31 +103,30 @@ void comSetup() {
 					step1 = true;
 					deb("Received h");
 				break;
-
 				case 'i':
 					step1 = true;
 					step2 = true;
 					deb("Received i");
 					serial.print('i');
 				break;
+				case default:
+					err("Out of sync. We are making connection, other player is elsewhere");
+				break;
 			}
 		}
+
 		if (!step1) {
 			serial.print('h');
-			//deb("Pushing h");
 			deb("Pushing h");
 		} else {
 			serial.print('i');
 			deb("Pushing i");
-			//deb("Pushing i");
 		}
 	}
 
-	deb("Connection made, waiting 3 secs");
-	//Flush serial buffer
+	deb("Connection made");
 	flushSerial();
-
-	delay(3000);
+	delay(500);
 
 	//Decide player numbers
 	deb("Deciding player numbers");
@@ -147,16 +150,19 @@ void comSetup() {
 					serial.print('0');
 					break;
 				}
+
+				case default:
+					err("Out of sync. We are deciding pNum, other player is elsewhere");
+				break;
 			}
 		} else {
 			serial.print('0');
-			delay(1000);
 		}
 	}
 
-	deb("Player numbers have been assigned. Waiting 3s to continue");
-	delay(3000);
+	deb("Player numbers have been assigned.");
 	flushSerial();
+	delay(500);
 }
 
 //Receive communication
