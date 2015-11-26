@@ -94,19 +94,19 @@ void comSetup() {
 	flushSerial(); //In case other device has been on for a while
 
 	while (!step2) {
-		delay(500);
+		//delay(500);
 
 		if (serial.available() > 0) {
 			data = serial.read();
 			switch (data) {
 				case 'h':
 					step1 = true;
-					deb("Received h");
+					//deb("Received h");
 				break;
 				case 'i':
 					step1 = true;
 					step2 = true;
-					deb("Received i");
+					//deb("Received i");
 					serial.print('i');
 				break;
 				default:
@@ -117,21 +117,21 @@ void comSetup() {
 
 		if (!step1) {
 			serial.print('h');
-			deb("Pushing h");
+			//deb("Pushing h");
 		} else {
 			serial.print('i');
-			deb("Pushing i");
+			//deb("Pushing i");
 		}
 	}
 
 	deb("Connection made");
 	flushSerial();
-	delay(500);
+	delay(5000);
 
 	//Decide player numbers
 	deb("Deciding player numbers");
 	while(otherPlayer == -1) {
-		delay(500);
+		//delay(500);
 		if (serial.available() > 0) {
 			data = serial.read();
 			switch (data) {
@@ -162,7 +162,7 @@ void comSetup() {
 
 	deb("Player numbers have been assigned.");
 	flushSerial();
-	delay(500);
+	delay(5000);
 }
 
 //Receive communication
