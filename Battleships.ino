@@ -123,7 +123,6 @@ void comSetup() {
 
 	deb("Connection made");
 	flushSerial();
-	//delay(5000);
 
 	//Decide player numbers
 	deb("Deciding player numbers");
@@ -155,7 +154,6 @@ void comSetup() {
 
 	deb("Player numbers have been assigned.");
 	flushSerial();
-	//delay(5000);
 }
 
 //Receive communication
@@ -179,8 +177,8 @@ void comReceive() {
 			//The rest of the packet structure depends on the current gameState
 			switch (gameState) {
 				case 0: { //Menu
-					deb("OtherPlayerReady:");
 					playerReady[pNum] = serial.read();
+					if (playerReady[otherPlayer]) deb("Other player is ready.");
 					break;
 				}
 
@@ -189,6 +187,7 @@ void comReceive() {
 						shipLocation[pNum][i] = serial.read();
 					}
 					playerReady[pNum] = serial.read();
+					if (playerReady[otherPlayer]) deb("Other player has selected ships and is ready.");
 					break;
 				}
 
@@ -216,7 +215,7 @@ void comReceive() {
 
 //Game Setup
 void gameSetup() {
-	deb("Starting gameSetup");
+	deb("Setting up game");
 	attachInterrupt(digitalPinToInterrupt(BUTTONPIN), buttonInterrupt, FALLING);
 	for (int i=0; i<countLEDs(); i++) {
 		pinMode(ledPin[i], OUTPUT);
@@ -232,6 +231,7 @@ void gameLoop() {
 			//Do some fancy shit with LEDs
 			//Check for button presses
 			if (buttonPressed && !playerReady[myPlayer]) {
+				deb("My player is ready.");
 				playerReady[myPlayer] = true;
 				serial.print(SOT);
 				serial.write(myPlayer);
@@ -244,7 +244,7 @@ void gameLoop() {
 			if (playerReady[0] && playerReady[1]) {
 				//Move on to next game state
 				gameState = 1;
-				deb("Moving to gameState 1");
+				deb("Both players are ready. Moving to gameState 1");
 				playerReady[0] = false;
 				playerReady[1] = false;
 			}
@@ -264,21 +264,22 @@ void gameLoop() {
 
 			//If there are no more ships to choose
 			if (nextFreeShip() == -1 && !playerReady[myPlayer]) {
+				deb("My player has selected ships and is ready.");
 				playerReady[myPlayer] = true;
 				serial.print(SOT);
-				serial.print(myPlayer);
-				serial.print(gameState);
+				serial.write(myPlayer);
+				serial.write(gameState);
 				for (int i=0; i<MAXSHIPS; i++) { //Send my ship positions
-					serial.print(shipLocation[myPlayer][i]);
+					serial.write(shipLocation[myPlayer][i]);
 				}
-				serial.print(playerReady[myPlayer]);
+				serial.write(playerReady[myPlayer]);
 				serial.print(EOT);
 			}
 
 			if (playerReady[0] && playerReady[1]) {
 				//Move to next game state
 				gameState = 2;
-				deb("Moving to gameState 2");
+				deb("Both players are ready. Moving to gameState 2");
 				playerReady[0] = false;
 				playerReady[1] = false;
 				//Set first players turn
