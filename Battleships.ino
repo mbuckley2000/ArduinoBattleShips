@@ -36,21 +36,21 @@ bool debugMode = true;
 SoftwareSerial serial(RXPIN, TXPIN);
 
 //Prints out an error message to the debug
-void err(char[] message) {
+void err(char* message) {
 	if (errorMode) {
 		Serial.print("ERROR: ");
 		Serial.println(message);
 	}
 }
 
-void warn(char[] message) {
+void warn(char* message) {
 	if (warningMode) {
 		Serial.print("ERROR: ");
 		Serial.println(message);
 	}
 }
 
-void deb(char[] message) {
+void deb(char* message) {
 	if (debugMode) {
 		Serial.print("ERROR: ");
 		Serial.println(message);
@@ -162,15 +162,9 @@ void comSetup() {
 //Receive communication
 void comReceive() {
 	if (serial.available() > 0) { //If there is anything in the serial receive buffer
-		deb("SOT:");
-		deb(serial.peek());
 		if (serial.read() == SOT) { //If the first character in the serial buffer indicates the start of a transmission
 			//Temporary variables for the other player's number and game mode
-			deb("pNum:");
-			deb(serial.peek());
 			int pNum = serial.read();
-			deb("gState:");
-			deb(serial.peek());
 			int gState = serial.read();
 			
 			if (pNum != otherPlayer) {
@@ -187,7 +181,6 @@ void comReceive() {
 			switch (gameState) {
 				case 0: { //Menu
 					deb("OtherPlayerReady:");
-					deb(serial.peek());
 					playerReady[pNum] = serial.read();
 					break;
 				}
@@ -212,8 +205,6 @@ void comReceive() {
 				}
 			}
 
-			deb("EOT:");
-			deb(serial.peek());
 			if (serial.read() != EOT) { //If the next character is not the end of transmission character, give a warning
 				warn("Unexpected packet structure");
 			}
