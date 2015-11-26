@@ -206,8 +206,12 @@ void comReceive() {
 				}
 
 				case 2: { //Attacking the other player's ships
-					playerReady[pNum] = serial.read();
-					playerWon[pNum] = serial.read();
+					shipDestroyed[myPlayer][serial.read()] = true;
+					deb("Received destroyed ship");
+					activePlayer = serial.read();
+					deb("Received active player: ", activePlayer);
+					playerWon[otherPlayer] = serial.read();
+					deb("Received other player won: ", playerWon[otherPlayer]);
 					break;
 				}
 
@@ -343,6 +347,16 @@ void gameLoop() {
 						serial.print(EOT);
 					}
 				}
+				if (playerWon[myPlayer]) {
+					deb("We have won!");
+					deb("Moving to gameState 3");
+					gameState = 3;
+				}
+				if (playerWon[otherPlayer]) {
+					deb("Other player has won");
+					deb("Moving to gameState 3");
+					gameState = 3;
+				}
 			}
 			break;
 		}
@@ -379,23 +393,31 @@ void musicLoop() {
 }
 
 int readPotentiometer() {
-  int valueRead = analogRead(POTPIN);
-  if(valueRead <= 128){
-    return 1; }
-  else if(valueRead<=256){
-    return 0; }
-  else if(valueRead<=384){
-    return 7; }
-  else if(valueRead<=512){
-    return 6; }
-  else if(valueRead<=640){
-    return 5; }
-  else if(valueRead<=768){
-    return 4; }
-  else if(valueRead<=896){
-    return 3; }
-  else {
-    return 2; }
+	int valueRead = analogRead(POTPIN);
+	if(valueRead <= 128){
+		return 1;
+	}
+	else if(valueRead<=256){
+		return 0;
+	}
+	else if(valueRead<=384){
+		return 7;
+	}
+	else if(valueRead<=512){
+		return 6;
+	}
+	else if(valueRead<=640){
+		return 5;
+	}
+	else if(valueRead<=768){
+		return 4;
+	}
+	else if(valueRead<=896){
+		return 3;
+	}
+	else {
+		return 2;
+	}
 }
 
 void flushSerial() {
@@ -426,23 +448,22 @@ int nextFreeShip() {
 }
 
 
-void playNote(int frequency, int notelength){
+void playNote(int frequency, int notelength) {
 	tone(SPEAKERPIN, frequency);
 	delay(notelength);
-	noTone(SPEAKERPIN); 
+	noTone(SPEAKERPIN);
 }
 
-void failSound(){
+void failSound() {
 	playNote(100, 1000);
-	delay(500); 
+	delay(500);
 }
 
-void succeedSound(){
+void succeedSound() {
 	playNote(329, 300);
 	playNote(494, 300);
 	playNote(658, 300);
-	delay(500); 
-}
+	delay(500);
 
 //Returns the enemy ship number (1, 2 or 3) at the location specified
 //Returns -1 if there is no ship at the location
