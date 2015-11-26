@@ -330,7 +330,7 @@ void gameLoop() {
 
 				//Take button input to attack
 				if (buttonPressed) {
-					if (enemyShipAtLocation(ship) != -1) {
+					if (enemyShipAtLocation(ship) > -1 && enemyShipAtLocation(ship) <= MAXSHIPS) {
 						//We have hit the enemy!
 						deb("We have hit enemy ship", enemyShipAtLocation(ship));
 						shipDestroyed[otherPlayer][enemyShipAtLocation(ship)] = true;
@@ -499,8 +499,8 @@ int enemyShipAtLocation(int location) {
 			return(i);
 		}
 	}
-	return(-1);
 	warn("We returned -1 from enemyShipAtLocation");
+	return(-1);
 }
 
 bool haveWeWon() {
