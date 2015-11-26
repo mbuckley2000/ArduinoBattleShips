@@ -346,6 +346,7 @@ void gameLoop() {
 						serial.write(playerWon[myPlayer]); //Tell them if we've won
 						serial.print(EOT);
 					}
+					buttonPressed = false;
 				}
 				if (playerWon[myPlayer]) {
 					deb("We have won!");
@@ -464,6 +465,7 @@ void succeedSound() {
 	playNote(494, 300);
 	playNote(658, 300);
 	delay(500);
+}
 
 //Returns the enemy ship number (1, 2 or 3) at the location specified
 //Returns -1 if there is no ship at the location
@@ -473,6 +475,7 @@ int enemyShipAtLocation(int location) {
 			return(i);
 		}
 	}
+	return(-1);
 }
 
 bool haveWeWon() {
