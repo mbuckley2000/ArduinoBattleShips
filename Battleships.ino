@@ -18,6 +18,7 @@
 
 //Game Variables
 int ledPin[] = {4, 5, 6, 7, 8, 9, 10, 11};
+int speakerPin = 3;
 int gameState = 0; //0 is menu, 1 is choosing ships, 2 is attacking ships, 3 is game over
 volatile bool buttonPressed;
 int activePlayer;
@@ -424,6 +425,22 @@ int nextFreeShip() {
 	}
 	return(-1);
 }
+
+
+void playNote(int frequency, int notelength){
+  tone(speakerPin, frequency);
+  delay(notelength);
+  noTone(speakerPin); }
+
+void failSound(){
+  playNote(100, 1000);
+  delay(500); }
+
+void succeedSound(){
+  playNote(329, 300);
+  playNote(494, 300);
+  playNote(658, 300);
+  delay(500); }
 
 //Returns the enemy ship number (1, 2 or 3) at the location specified
 //Returns -1 if there is no ship at the location
