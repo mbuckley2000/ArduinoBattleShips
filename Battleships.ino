@@ -28,26 +28,33 @@ bool playerReady[2];
 bool playerWon[2];
 int shipLocation[2][MAXSHIPS];
 bool shipTaken[SHIPTOTAL];
+bool errorMode = true;
+bool warningMode = true; 
 bool debugMode = true; 
-
-//Matt rules
-//He really does
 
 //SoftwareSerial
 SoftwareSerial serial(RXPIN, TXPIN);
 
 //Prints out an error message to the debug
-void err(char* message) {
-	if (debugMode) Serial.println(strcat(strcat("ERROR: ", message), "\n"));
+void err(char[] message) {
+	if (errorMode) {
+		Serial.print("ERROR: ");
+		Serial.println(message);
+	}
 }
 
-//Prints out a warning message to the debug
-void warn(char* message) {
-	if (debugMode) Serial.println(strcat(strcat("WARNING: ", message), "\n"));
+void warn(char[] message) {
+	if (warningMode) {
+		Serial.print("ERROR: ");
+		Serial.println(message);
+	}
 }
 
-void deb(char* message) {
-	if (debugMode) Serial.println(strcat(strcat("DEBUG: ", message), "\n"));
+void deb(char[] message) {
+	if (debugMode) {
+		Serial.print("ERROR: ");
+		Serial.println(message);
+	}
 }
 
 void buttonInterrupt() {
@@ -79,7 +86,7 @@ void comSetup() {
 	if (debugMode) Serial.begin(57600);
 
 	//Wait for connection
-	Serial.println("Waiting for connection");
+	deb("Waiting for connection");
 	bool step1 = false;
 	bool step2 = false;
 	char data;
@@ -90,13 +97,13 @@ void comSetup() {
 			switch (data) {
 				case 'h':
 					step1 = true;
-					Serial.println("Received h");
+					deb("Received h");
 				break;
 
 				case 'i':
 					step1 = true;
 					step2 = true;
-					Serial.println("Received i");
+					deb("Received i");
 					serial.print('i');
 				break;
 			}
@@ -104,22 +111,22 @@ void comSetup() {
 		if (!step1) {
 			serial.print('h');
 			//deb("Pushing h");
-			Serial.println("Pushing h");
+			deb("Pushing h");
 		} else {
 			serial.print('i');
-			Serial.println("Pushing i");
+			deb("Pushing i");
 			//deb("Pushing i");
 		}
 	}
 
-	Serial.println("Connection made, waiting 3 secs");
+	deb("Connection made, waiting 3 secs");
 	//Flush serial buffer
 	flushSerial();
 
 	delay(3000);
 
 	//Decide player numbers
-	Serial.println("Deciding player numbers");
+	deb("Deciding player numbers");
 	while(otherPlayer == -1) {
 		delay(500);
 		if (serial.available() > 0) {
@@ -128,7 +135,7 @@ void comSetup() {
 				case '0': {
 					otherPlayer = 0;
 					myPlayer = 1;
-					Serial.println("I am player 1");
+					deb("I am player 1");
 					serial.print('1');
 					break;
 				}
@@ -136,7 +143,7 @@ void comSetup() {
 				case '1': {
 					otherPlayer = 1;
 					myPlayer = 0;
-					Serial.println("I am player 0");
+					deb("I am player 0");
 					serial.print('0');
 					break;
 				}
@@ -147,7 +154,7 @@ void comSetup() {
 		}
 	}
 
-	Serial.println("Player numbers have been assigned. Waiting 3s to continue");
+	deb("Player numbers have been assigned. Waiting 3s to continue");
 	delay(3000);
 	flushSerial();
 }
@@ -155,15 +162,15 @@ void comSetup() {
 //Receive communication
 void comReceive() {
 	if (serial.available() > 0) { //If there is anything in the serial receive buffer
-		Serial.println("SOT:");
-		Serial.println(serial.peek());
+		deb("SOT:");
+		deb(serial.peek());
 		if (serial.read() == SOT) { //If the first character in the serial buffer indicates the start of a transmission
 			//Temporary variables for the other player's number and game mode
-			Serial.println("pNum:");
-			Serial.println(serial.peek());
+			deb("pNum:");
+			deb(serial.peek());
 			int pNum = serial.read();
-			Serial.println("gState:");
-			Serial.println(serial.peek());
+			deb("gState:");
+			deb(serial.peek());
 			int gState = serial.read();
 			
 			if (pNum != otherPlayer) {
@@ -179,8 +186,8 @@ void comReceive() {
 			//The rest of the packet structure depends on the current gameState
 			switch (gameState) {
 				case 0: { //Menu
-					Serial.println("OtherPlayerReady:");
-					Serial.println(serial.peek());
+					deb("OtherPlayerReady:");
+					deb(serial.peek());
 					playerReady[pNum] = serial.read();
 					break;
 				}
@@ -205,13 +212,13 @@ void comReceive() {
 				}
 			}
 
-			Serial.println("EOT:");
-			Serial.println(serial.peek());
+			deb("EOT:");
+			deb(serial.peek());
 			if (serial.read() != EOT) { //If the next character is not the end of transmission character, give a warning
 				warn("Unexpected packet structure");
 			}
 		} else {
-			Serial.println("WARNING: Received packet that doesn't start with SOT, flushing serial buffer");
+			warn("Received packet that doesn't start with SOT, flushing serial buffer");
 			flushSerial();
 		}	
 	}
@@ -219,7 +226,7 @@ void comReceive() {
 
 //Game Setup
 void gameSetup() {
-	if (debugMode) Serial.println("Starting gameSetup");
+	deb("Starting gameSetup");
 	attachInterrupt(digitalPinToInterrupt(BUTTONPIN), buttonInterrupt, FALLING);
 	for (int i=0; i<countLEDs(); i++) {
 		pinMode(ledPin[i], OUTPUT);
@@ -355,7 +362,7 @@ int readPotentiometer() {
 }
 
 void flushSerial() {
-	Serial.println("Flushing serial");
+	deb("Flushing serial");
 	char data;
 	while(serial.available() > 0) {
 		data = serial.read();
