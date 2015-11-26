@@ -206,8 +206,13 @@ void comReceive() {
 				}
 
 				case 2: { //Attacking the other player's ships
-					shipDestroyed[myPlayer][serial.read()] = true;
-					deb("Received destroyed ship");
+					int shipTheyDestroyed = serial.read();
+					if (shipTheyDestroyed != -1) {
+						shipDestroyed[myPlayer][] = true;
+						deb("They destroyed our ship", shipTheyDestroyed);
+					} else {
+						deb("They missed their shot");
+					}
 					activePlayer = serial.read();
 					deb("Received active player: ", activePlayer);
 					playerWon[otherPlayer] = serial.read();
@@ -330,6 +335,7 @@ void gameLoop() {
 						//We have hit the enemy!
 						deb("We have hit enemy ship", enemyShipAtLocation(ship));
 						shipDestroyed[otherPlayer][enemyShipAtLocation(ship)] = true;
+						shipLocation[otherPlayer][enemyShipAtLocation(ship)] = -1;
 						//It's now their turn
 						activePlayer = otherPlayer;
 						//Check if we have won
@@ -342,6 +348,19 @@ void gameLoop() {
 						serial.write(myPlayer);
 						serial.write(gameState);
 						serial.write(enemyShipAtLocation(ship)); //Ship we just destroyed
+						serial.write(activePlayer); //Player who's turn it is now (otherPlayer)
+						serial.write(playerWon[myPlayer]); //Tell them if we've won
+						serial.print(EOT);
+					} else {
+						//We missed
+						deb("We missed!");
+						//It's now their turn
+						activePlayer = otherPlayer;
+						//Let's tell them
+						serial.print(SOT);
+						serial.write(myPlayer);
+						serial.write(gameState);
+						serial.write(-1); //Ship we just destroyed (We didn't)
 						serial.write(activePlayer); //Player who's turn it is now (otherPlayer)
 						serial.write(playerWon[myPlayer]); //Tell them if we've won
 						serial.print(EOT);
@@ -447,7 +466,6 @@ int nextFreeShip() {
 	}
 	return(-1);
 }
-
 
 void playNote(int frequency, int notelength) {
 	tone(SPEAKERPIN, frequency);
