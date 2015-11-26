@@ -328,11 +328,16 @@ void gameLoop() {
 						shipDestroyed[otherPlayer][enemyShipAtLocation(ship)] = true;
 						//It's now their turn
 						activePlayer = otherPlayer;
+						//Check if we have won
+						if (haveWeWon()) {
+							//We won!
+							playerWon[myPlayer] = true;
+						}
 						//Let's tell them
 						serial.print(SOT);
 						serial.write(myPlayer);
 						serial.write(gameState);
-						serial.write(enemyShipAtLocation(ship)); //Destroyed ship
+						serial.write(enemyShipAtLocation(ship)); //Ship we just destroyed
 						serial.write(activePlayer); //Player who's turn it is now (otherPlayer)
 						serial.write(playerWon[myPlayer]); //Tell them if we've won
 						serial.print(EOT);
@@ -428,4 +433,18 @@ int enemyShipAtLocation(int location) {
 			return(i);
 		}
 	}
-} 
+}
+
+bool haveWeWon() {
+	int numberShipsDestroyed = 0;
+	for (int i=0; i<MAXSHIPS; i++) {
+		if (shipDestroyed[otherPlayer][i]) {
+			numberShipsDestroyed++;
+		}
+	}
+	if (numberShipsDestroyed == MAXSHIPS) {
+		return(true);
+	} else {
+		return(false);
+	}
+}
