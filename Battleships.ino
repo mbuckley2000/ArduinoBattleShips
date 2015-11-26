@@ -208,7 +208,7 @@ void comReceive() {
 				case 2: { //Attacking the other player's ships
 					int shipTheyDestroyed = serial.read();
 					if (shipTheyDestroyed != -1) {
-						shipDestroyed[myPlayer][] = true;
+						shipDestroyed[myPlayer][shipTheyDestroyed] = true;
 						deb("They destroyed our ship", shipTheyDestroyed);
 					} else {
 						deb("They missed their shot");
