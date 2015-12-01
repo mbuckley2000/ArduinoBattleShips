@@ -20,6 +20,7 @@
 
 //Game Variables
 int ledPin[] = {4, 5, 6, 7, 8, 9, 10, 11};
+int SpeedInitial[] = {150, 100, 50, 30, 20};
 int gameState = 0; //0 is menu, 1 is choosing ships, 2 is attacking ships, 3 is game over
 volatile bool buttonPressed;
 int activePlayer;
@@ -482,6 +483,15 @@ void displayMyShips() {
 		}
 	}
 }
+
+void BeginGame(){
+	for(int i=0; i<8; i++){
+	int initialGame = SpeedInitial[i];
+	for(int i=0; i<8; i++){
+	  	digitalWrite(ledPin[i], HIGH);
+	  	delay(initialGame);
+	  	digitalWrite(ledPin[i], LOW);}}
+	delay(1000); }
 
 //   -----------------Define Sound Functions-----------------------------
 
