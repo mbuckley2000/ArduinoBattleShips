@@ -20,7 +20,8 @@
 #define SHIPTOTAL 8
 
 //Game Variables
-int ledPin[] = {4, 5, 6, 7, 8, 9, 10, 11}, gameState = 0; //0 is menu, 1 is choosing ships, 2 is attacking ships, 3 is game over
+int ledPin[] = {4, 5, 6, 7, 8, 9, 10, 11};
+int gameState = 0; //0 is menu, 1 is choosing ships, 2 is attacking ships, 3 is game over
 int activePlayer, myPlayer = -1, otherPlayer = -1;
 int shipLocation[2][MAXSHIPS];
 bool playerReady[2], playerWon[2];
