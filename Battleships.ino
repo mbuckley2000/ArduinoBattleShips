@@ -405,9 +405,8 @@ int readPotentiometer() {
 // function the serial buffer is empty
 void flushSerial() {
 	deb("Flushing serial");
-	char data;
 	while(serial.available() > 0) {
-		data = serial.read();
+		serial.read();
 	}
 }
 
