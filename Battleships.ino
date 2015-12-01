@@ -303,11 +303,9 @@ void gameLoop() {
 
 				//Take button input to attack
 				if (buttonPressed) {
-					missleFired();
 					if (enemyShipAtLocation(ship) > -1 && enemyShipAtLocation(ship) <= MAXSHIPS) {
 						//We have hit the enemy!
 						deb("We have hit enemy ship", enemyShipAtLocation(ship));
-						exploded();
 						shipDestroyed[otherPlayer][enemyShipAtLocation(ship)] = true;
 						shipLocation[otherPlayer][enemyShipAtLocation(ship)] = -1;
 						//It's now their turn
@@ -490,7 +488,7 @@ void missleFired(){
 
 // Define a function that uses the playSound one to play the sound of a ship that exlodes.
 
-void exploded(){
+void xloded(){
 	for(int k = 0; k < 250; k++){
     long blow1 = random(100,2000);
     playSound(blow1,3);
