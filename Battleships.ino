@@ -171,7 +171,7 @@ void comReceive() {
 					deb("Received pReady", playerReady[pNum]);
 					if (playerReady[otherPlayer]) deb("Other player is ready.");
 					while(serial.available() > 0) {
-						Serial.println(serial.read());
+						Serial.println(serial.peek());
 					}
 					break;
 				}
