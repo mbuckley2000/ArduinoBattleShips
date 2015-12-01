@@ -29,9 +29,9 @@ bool playerReady[2];
 bool playerWon[2];
 int shipLocation[2][MAXSHIPS];
 bool shipTaken[SHIPTOTAL];
-bool errorMode = false;
-bool warningMode = false; 
-bool debugMode = false;
+bool errorMode = true;
+bool warningMode = true; 
+bool debugMode = true;
 bool shipDestroyed[2][MAXSHIPS];
 
 //SoftwareSerial
