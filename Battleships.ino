@@ -209,6 +209,7 @@ void comReceive() {
 					int shipTheyDestroyed = serial.read();
 					if (shipTheyDestroyed != 255) {
 						shipDestroyed[myPlayer][shipTheyDestroyed] = true;
+						exploded();
 						deb("They destroyed our ship", shipTheyDestroyed);
 					} else {
 						deb("They missed their shot", shipTheyDestroyed);
@@ -330,6 +331,7 @@ void gameLoop() {
 
 				//Take button input to attack
 				if (buttonPressed) {
+					missleFired();
 					if (enemyShipAtLocation(ship) > -1 && enemyShipAtLocation(ship) <= MAXSHIPS) {
 						//We have hit the enemy!
 						deb("We have hit enemy ship", enemyShipAtLocation(ship));
@@ -368,6 +370,9 @@ void gameLoop() {
 				}
 				if (playerWon[myPlayer]) {
 					deb("We have won!");
+
+					succeedSound();
+
 					deb("Moving to gameState 3");
 					gameState = 3;
 				}
@@ -490,6 +495,18 @@ void exploded(){
   }  
 }
 
+// Define a function to play a succeeding sound when a player wins the game.
+void succeedSound(){
+	tone(SPEAKERPIN, 329);
+	delay(300);
+	noTone(SPEAKERPIN);
+	tone(SPEAKERPIN, 494);
+	delay(300);
+	noTone(SPEAKERPIN);
+	tone(SPEAKERPIN, 658);
+	delay(300);
+	noTone(SPEAKERPIN);
+	delay(500); }
 
 //Returns they ship number (1, 2 or 3) at the location specified
 //Returns -1 if there is no ship at the location
