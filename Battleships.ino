@@ -27,7 +27,7 @@ int myPlayer = -1;
 int otherPlayer = -1;
 int shipLocation[2][MAXSHIPS];
 bool playerReady[2], playerWon[2];
-bool shipTaken[SHIPTOTAL]
+bool shipTaken[SHIPTOTAL];
 bool errorMode = true;
 bool warningMode = true;
 bool debugMode = true;
