@@ -22,10 +22,16 @@
 //Game Variables
 int ledPin[] = {4, 5, 6, 7, 8, 9, 10, 11};
 int gameState = 0; //0 is menu, 1 is choosing ships, 2 is attacking ships, 3 is game over
-int activePlayer, myPlayer = -1, otherPlayer = -1;
+int activePlayer;
+int myPlayer = -1;
+int otherPlayer = -1;
 int shipLocation[2][MAXSHIPS];
 bool playerReady[2], playerWon[2];
-bool shipTaken[SHIPTOTAL], errorMode = true, warningMode = true, debugMode = true, shipDestroyed[2][MAXSHIPS];
+bool shipTaken[SHIPTOTAL]
+bool errorMode = true;
+bool warningMode = true;
+bool debugMode = true;
+bool shipDestroyed[2][MAXSHIPS];
 volatile bool buttonPressed;
 
 //SoftwareSerial
