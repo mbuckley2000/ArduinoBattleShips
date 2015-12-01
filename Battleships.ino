@@ -37,6 +37,13 @@ bool shipDestroyed[2][MAXSHIPS];
 //SoftwareSerial
 SoftwareSerial serial(RXPIN, TXPIN);
 
+//Sounds
+int winTones[] = {523, 587, 659, 698, 784, 880, 1046};
+int loseTones[] = {523, 587, 659, 698, 784, 880, 1046};
+int gSharpMinor[] = {415, 494, 622, 830, 988, 1244};
+int dSharpMinor[] = {311, 370, 466, 622, 740, 932};
+int cSharpMinor[] = {277, 330, 415, 554, 660, 830};
+
 
 // ------------------------ Setup and Loop -----------------------
 
