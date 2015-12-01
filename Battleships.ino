@@ -20,7 +20,7 @@
 
 //Game Variables
 int ledPin[] = {4, 5, 6, 7, 8, 9, 10, 11};
-int SpeedInitial[] = {150, 100, 50, 30, 20};
+int speedInitial[] = {150, 100, 50, 30, 20}; //For light display
 int gameState = 0; //0 is menu, 1 is choosing ships, 2 is attacking ships, 3 is game over
 volatile bool buttonPressed;
 int activePlayer;
@@ -39,12 +39,7 @@ bool shipDestroyed[2][MAXSHIPS];
 SoftwareSerial serial(RXPIN, TXPIN);
 
 //Sounds
-int winTones[] = {523, 587, 659, 698, 784, 880, 1046};
-int loseTones[] = {523, 587, 659, 698, 784, 880, 1046};
-int gSharpMinor[] = {415, 494, 622, 830, 988, 1244};
-int dSharpMinor[] = {311, 370, 466, 622, 740, 932};
-int cSharpMinor[] = {277, 330, 415, 554, 660, 830};
-
+int winTones[] = {523, 587, 659, 698, 784, 880, 1046, 1174};
 
 // ------------------------ Setup and Loop -----------------------
 
@@ -379,7 +374,9 @@ void gameLoop() {
 		}
 
 		case 3: { //Game over
-			gameState = 0;
+			if (playerWon[myPlayer]) {
+				lightDisplay();
+			}
 			break;
 		}
 	}
@@ -491,14 +488,19 @@ void displayMyShips() {
 	}
 }
 
-void BeginGame(){
-	for(int i=0; i<8; i++){
-	int initialGame = SpeedInitial[i];
-	for(int i=0; i<8; i++){
-	  	digitalWrite(ledPin[i], HIGH);
-	  	delay(initialGame);
-	  	digitalWrite(ledPin[i], LOW);}}
-	delay(1000); }
+void lightDisplay(){
+	for(int i=0; i<8; i++) {
+		int initialGame = speedInitial[i];
+		for(int i=0; i<8; i++) {
+		  	digitalWrite(ledPin[i], HIGH);
+		  	delay(initialGame);
+		  	digitalWrite(ledPin[i], LOW);
+		  	tone(SPEAKERPIN, winTones[i]);
+		}
+	}
+	delay(1000);
+	noTone(SPEAKERPIN);
+}
 
 //   -----------------Define Sound Functions-----------------------------
 
