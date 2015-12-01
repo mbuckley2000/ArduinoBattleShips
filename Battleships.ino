@@ -170,6 +170,9 @@ void comReceive() {
 					playerReady[pNum] = serial.read();
 					deb("Received pReady", playerReady[pNum]);
 					if (playerReady[otherPlayer]) deb("Other player is ready.");
+					while(serial.available() > 0) {
+						Serial.println(serial.read());
+					}
 					break;
 				}
 
@@ -205,7 +208,7 @@ void comReceive() {
 			}
 
 			if (serial.read() != EOT) { //If the next character is not the end of transmission character, give a warning
-				warn("Unexpected packet structure");
+				warn("Unexpected packet structure (didn't receive EOT)");
 			} else {
 				deb("Received EOT");
 			}
