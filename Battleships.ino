@@ -498,15 +498,15 @@ void exploded(){
 
 // Define a function to play a succeeding sound when a player wins the game.
 void succeedSound(){
-	Tone(speakerPin, 329);
+	tone(SPEAKERPIN, 329);
 	delay(300);
-	noTone(speakerPin);
-	Tone(speakerPin, 494);
+	noTone(SPEAKERPIN);
+	tone(SPEAKERPIN, 494);
 	delay(300);
-	noTone(speakerPin);
-	Tone(speakerPin, 658);
+	noTone(SPEAKERPIN);
+	tone(SPEAKERPIN, 658);
 	delay(300);
-	noTone(speakerPin);
+	noTone(SPEAKERPIN);
 	delay(500); }
 
 
