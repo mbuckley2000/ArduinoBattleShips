@@ -29,9 +29,9 @@ bool playerReady[2];
 bool playerWon[2];
 int shipLocation[2][MAXSHIPS];
 bool shipTaken[SHIPTOTAL];
-bool errorMode = false;
-bool warningMode = false; 
-bool debugMode = false;
+bool errorMode = true;
+bool warningMode = true; 
+bool debugMode = true;
 bool shipDestroyed[2][MAXSHIPS];
 
 //SoftwareSerial
@@ -187,7 +187,7 @@ void comReceive() {
 					int shipTheyDestroyed = serial.read();
 					if (shipTheyDestroyed != 255) {
 						shipDestroyed[myPlayer][shipTheyDestroyed] = true;
-						exploded();
+						exploded(shipLocation[myPlayer][shipTheyDestroyed]);
 						deb("They destroyed our ship", shipTheyDestroyed);
 					} else {
 						deb("They missed their shot", shipTheyDestroyed);
@@ -298,6 +298,10 @@ void gameLoop() {
 				//Set first players turn
 				activePlayer = 0;
 			}
+
+			if (playerReady[myPlayer]) {
+				displayMyShips();
+			}
 			break;
 		}
 
@@ -359,6 +363,9 @@ void gameLoop() {
 					deb("Moving to gameState 3");
 					gameState = 3;
 				}
+			} else {
+				//It's their turn
+				displayMyShips();
 			}
 			break;
 		}
@@ -468,6 +475,14 @@ bool haveWeWon() {
 	}
 }
 
+void displayMyShips() {
+	for (int i=0; i<MAXSHIPS; i++) {
+		if (!shipDestroyed[myPlayer][i]) {
+			digitalWrite(ledPin[shipLocation[myPlayer][i]], HIGH);
+		}
+	}
+}
+
 //   -----------------Define Sound Functions-----------------------------
 
 // Define a function to play a sound that will be implemented by the missleFired and exploded functions.
@@ -489,11 +504,12 @@ void missleFired(){
 }
 
 // Define a function that uses the playSound one to play the sound of a ship that exlodes.
-void exploded(){
+void exploded(int ship) {
 	for(int k = 0; k < 250; k++){
-    long blow1 = random(100,2000);
-    playSound(blow1,3);
-  }  
+	    long blow1 = random(100,2000);
+	    playSound(blow1,3);
+	    digitalWrite(ledPin[ship], !digitalRead(ledPin[ship]));
+  	}  
 }
 
 // Define a function to play a succeeding sound when a player wins the game.
