@@ -193,6 +193,7 @@ void comReceive() {
 					if (playerReady[otherPlayer]) deb("Other player is ready.");
 					while(serial.available() > 0) {
 						Serial.println(serial.peek());
+					}
 					break;
 				}
 
