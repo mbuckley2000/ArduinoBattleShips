@@ -61,7 +61,7 @@ void comSetup() {
 	//Setup SoftwareSerial
 	pinMode(RXPIN, INPUT);
 	pinMode(TXPIN, OUTPUT);
-	serial.begin(57600);
+	serial.begin(9600);
 
 	//Setup Debug Serial
 	if (debugMode || errorMode || warningMode) Serial.begin(57600);
