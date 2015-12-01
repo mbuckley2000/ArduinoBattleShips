@@ -1,6 +1,3 @@
-// ------------------------ Definitions -----------------------
-
-
 #include <SoftwareSerial.h>
 #include <stdbool.h>
 
@@ -9,11 +6,11 @@
 #define EOT 'e' //End of transmission
 
 //Pin Definitions
-#define RXPIN 12 
+#define RXPIN 3
 #define TXPIN 13
 #define POTPIN A0
 #define BUTTONPIN 2
-#define SPEAKERPIN 3
+#define SPEAKERPIN 12
 
 //Game definitions
 #define MAXSHIPS 3
@@ -22,24 +19,57 @@
 //Game Variables
 int ledPin[] = {4, 5, 6, 7, 8, 9, 10, 11};
 int gameState = 0; //0 is menu, 1 is choosing ships, 2 is attacking ships, 3 is game over
+volatile bool buttonPressed;
 int activePlayer;
 int myPlayer = -1;
 int otherPlayer = -1;
+bool playerReady[2];
+bool playerWon[2];
 int shipLocation[2][MAXSHIPS];
-bool playerReady[2], playerWon[2];
 bool shipTaken[SHIPTOTAL];
 bool errorMode = true;
-bool warningMode = true;
+bool warningMode = true; 
 bool debugMode = true;
 bool shipDestroyed[2][MAXSHIPS];
-volatile bool buttonPressed;
 
 //SoftwareSerial
 SoftwareSerial serial(RXPIN, TXPIN);
 
+//Prints out an error message to the debug
+void err(char* message) {
+	if (errorMode) {
+		Serial.print("ERROR: ");
+		Serial.println(message);
+	}
+}
 
+void warn(char* message) {
+	if (warningMode) {
+		Serial.print("WARNING: ");
+		Serial.println(message);
+	}
+}
 
-// ------------------------ Setup and Loop -----------------------
+void deb(char* message) {
+	if (debugMode) {
+		Serial.print("DEBUG: ");
+		Serial.println(message);
+	}
+}
+
+void deb(char* message, int integer) {
+	if (debugMode) {
+		Serial.print("DEBUG: ");
+		Serial.print(message);
+		Serial.print(": ");
+		Serial.println(integer);
+	}
+}
+
+void buttonInterrupt() {
+	buttonPressed = true;
+}
+
 void setup() {
 comSetup();
 gameSetup();
@@ -53,21 +83,12 @@ gameSetup();
 	gameLoop();
 }
 
-
-
-// ------------------------ Function definitions -----------------------
-
-// Define the ISR to call when the interruptFunction is called.
-void buttonInterrupt() {
-	buttonPressed = true;
-}
-
 //Setup Communication
 void comSetup() {
 	//Setup SoftwareSerial
 	pinMode(RXPIN, INPUT);
 	pinMode(TXPIN, OUTPUT);
-	serial.begin(9600);
+	serial.begin(57600);
 
 	//Setup Debug Serial
 	if (debugMode || errorMode || warningMode) Serial.begin(57600);
@@ -172,7 +193,6 @@ void comReceive() {
 					if (playerReady[otherPlayer]) deb("Other player is ready.");
 					while(serial.available() > 0) {
 						Serial.println(serial.peek());
-					}
 					break;
 				}
 
@@ -208,7 +228,7 @@ void comReceive() {
 			}
 
 			if (serial.read() != EOT) { //If the next character is not the end of transmission character, give a warning
-				warn("Unexpected packet structure (didn't receive EOT)");
+				warn("Unexpected packet structure");
 			} else {
 				deb("Received EOT");
 			}
@@ -316,14 +336,12 @@ void gameLoop() {
 						//We have hit the enemy!
 						deb("We have hit enemy ship", enemyShipAtLocation(ship));
 						shipDestroyed[otherPlayer][enemyShipAtLocation(ship)] = true;
-						shipLocation[otherPlayer][enemyShipAtLocation(ship)] = -1;
 						//It's now their turn
 						activePlayer = otherPlayer;
 						//Check if we have won
 						if (haveWeWon()) {
 							//We won!
 							playerWon[myPlayer] = true;
-							succeedSound();
 						}
 						//Let's tell them
 						serial.print(SOT);
@@ -333,6 +351,7 @@ void gameLoop() {
 						serial.write(activePlayer); //Player who's turn it is now (otherPlayer)
 						serial.write(playerWon[myPlayer]); //Tell them if we've won
 						serial.print(EOT);
+						shipLocation[otherPlayer][enemyShipAtLocation(ship)] = -1;
 					} else {
 						//We missed
 						deb("We missed!");
@@ -370,10 +389,29 @@ void gameLoop() {
 	}
 }
 
-// Define a function that takes input from the potentiometer and splits the range of values
-// the potentiometer can take into 7 "regions"; the potentiometer can take values from 0 to
-// 1023 so every 128 corresponds to a a value, meaning it will light up the corresponding LED
-// when the value returned by this function is used.
+void musicLoop() {
+	switch (gameState) {
+		case 0: { //Menu music
+
+			break;
+		}
+
+		case 1: { //Selecting ships music
+
+			break;
+		}
+
+		case 2: { //Attacking music
+
+			break;
+		}
+
+		case 3: { //Game over music
+
+			break;
+		}
+	}
+}
 
 int readPotentiometer() {
 	int valueRead = analogRead(POTPIN);
@@ -403,30 +441,24 @@ int readPotentiometer() {
 	}
 }
 
-// Define a function to flush the serial by looping through the available serial
-// buffer and reading everything without doing anything with it so that by the end of the
-// function the serial buffer is empty
 void flushSerial() {
 	deb("Flushing serial");
+	char data;
 	while(serial.available() > 0) {
-		serial.read();
+		data = serial.read();
 	}
 }
 
-// Define a function that lights off every LED;
 void clearLEDs() {
 	for (int i=0; i<countLEDs(); i++) {
 		digitalWrite(ledPin[i], LOW);
 	}
 }
 
-// Define a function that returns the number of LEDs
 int countLEDs() {
 	return(sizeof(ledPin) / sizeof(ledPin[0]));
 }
 
-// Define a function that returns the next free ship by looping through the locations and checking
-// which are emoty and which are not
 int nextFreeShip() {
 	for (int i=0; i<MAXSHIPS; i++) {
 		if (shipLocation[myPlayer][i] == -1) {
@@ -436,44 +468,6 @@ int nextFreeShip() {
 	return(-1);
 }
 
-
-//Define a function that returns the ship number (1, 2 or 3) at the location specified
-//Returns -1 if there is no ship at the location
-int enemyShipAtLocation(int location) {
-	for (int i=0; i<MAXSHIPS; i++) {
-		if (shipLocation[otherPlayer][i] == location) {
-			return(i);
-		}
-	}
-	warn("We returned -1 from enemyShipAtLocation");
-	return(-1);
-}
-
-
-// Define a funciton that returns a boolean corresponding to whether the active player has won
-// or not by looping through all of the ships, checking how many have been destroed and checking 
-// whether the number of ships destroyed corresponds to the number of total ships. If so, return true
-// else return false
-bool haveWeWon() {
-	int numberShipsDestroyed = 0;
-	for (int i=0; i<MAXSHIPS; i++) {
-		if (shipDestroyed[otherPlayer][i]) {
-			numberShipsDestroyed++;
-		}
-	}
-	if (numberShipsDestroyed == MAXSHIPS) {
-		return(true);
-	} 
-	else {
-		return(false);
-	}
-}
-
-
-//   -----------------Define Sound Functions-----------------------------
-
-
-// Define a function to play a sound that will be implemented by the missleFired and exploded functions.
 void playSound(long frequency, long lengthSound){
   long period = 1000000/frequency;
   lengthSound = lengthSound*1000/period;
@@ -485,72 +479,42 @@ void playSound(long frequency, long lengthSound){
   }
 }
 
-
-// Define a function that uses the playSound one to play the sound of a missle that has been fired
 void missleFired(){
 	for(int i = 99; i < 1002; i += 5){
     playSound(1000000/i,10);
   }
 }
 
-
-// Define a function that uses the playSound one to play the sound of a ship that exlodes.
-
-void xloded(){
+void exploded(){
 	for(int k = 0; k < 250; k++){
     long blow1 = random(100,2000);
     playSound(blow1,3);
   }  
 }
 
-// Define a function to play a succeeding sound when a player wins the game.
-void succeedSound(){
-	tone(SPEAKERPIN, 329);
-	delay(300);
-	noTone(SPEAKERPIN);
-	tone(SPEAKERPIN, 494);
-	delay(300);
-	noTone(SPEAKERPIN);
-	tone(SPEAKERPIN, 658);
-	delay(300);
-	noTone(SPEAKERPIN);
-	delay(500); }
 
-
-//   -----------------Define Debugging Functions-----------------------------
-
-
-
-//Define a function that prints out an error message to debug
-void err(char* message) {
-	if (errorMode) {
-		Serial.print("ERROR: ");
-		Serial.println(message);
+//Returns they ship number (1, 2 or 3) at the location specified
+//Returns -1 if there is no ship at the location
+int enemyShipAtLocation(int location) {
+	for (int i=0; i<MAXSHIPS; i++) {
+		if (shipLocation[otherPlayer][i] == location) {
+			return(i);
+		}
 	}
+	warn("We returned -1 from enemyShipAtLocation");
+	return(-1);
 }
 
-//Define a function that prints out a warning message to debug
-void warn(char* message) {
-	if (warningMode) {
-		Serial.print("WARNING: ");
-		Serial.println(message);
+bool haveWeWon() {
+	int numberShipsDestroyed = 0;
+	for (int i=0; i<MAXSHIPS; i++) {
+		if (shipDestroyed[otherPlayer][i]) {
+			numberShipsDestroyed++;
+		}
 	}
-}
-
-//Define a function that prints out a message to debug
-void deb(char* message) {
-	if (debugMode) {
-		Serial.print("DEBUG: ");
-		Serial.println(message);
-	}
-}
-
-//Define an overriding function that prints out a message to debug and an integer
-void deb(char* message, int integer) {
-	if (debugMode) {
-		Serial.print("DEBUG: ");
-		Serial.print(message);
-		Serial.print(": ");
-		Serial.println(integer);
+	if (numberShipsDestroyed == MAXSHIPS) {
+		return(true);
+	} else {
+		return(false);
 	}
 }
